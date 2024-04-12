@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROJECT_DIR="../demo-portal/"
+PROJECT_DIR="demo-portal/"
 
 # Replace with your actual Github token (**never store it in plain text!**)
 GITHUB_TOKEN="your_github_token"

@@ -1,0 +1,33 @@
+name: Build and Deploy Docker Image
+
+on:
+  push:
+    branches: [ main ]  # Trigger on pushes to the main branch
+  workflow_dispatch:
+    # Define inputs that are required for the manual trigger
+    inputs:
+      name:
+        description: 'Name of the app' 
+        required: true  # Is it optional or required?
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest  # Run the workflow on Ubuntu virtual machines
+    if: ${{ github.event.inputs.name != '' }}
+    steps:
+      - uses: actions/checkout@v3  # Checkout the code from the repository
+
+      - name: Build Docker image
+        run: docker build -t ${{ github.event.inputs.name }} .
+      - name: run container
+        run: docker run -d -p 5000:5000 --health-cmd="CMD-TO-CHECK-HEALTH" --health-interval=10s --health-timeout=5s ${{ github.event.inputs.name }}
+  
+      - name: Check if app is running
+        run: |
+          nc -z localhost 5000
+          if [[ $? -eq 0 ]]; then
+            echo "App is running!"
+          else
+            echo "App is not running."
+            exit 1  # Exit workflow with failure
+          fi
